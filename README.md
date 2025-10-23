@@ -1,32 +1,32 @@
 # Example Output (Server)
 
-Performance counter stats for './uds-server':
+Performance counter stats for './kv-server':
 
-    37      syscalls:sys_enter_read
-     3      syscalls:sys_enter_write
-     2      syscalls:sys_enter_accept
+    3      syscalls:sys_enter_read
+    1      syscalls:sys_enter_write
+    2      syscalls:sys_enter_accept
     
-    97 seconds time elapsed
+    26.3 seconds time elapsed
 
 # Server-Side Interpretation
-Performance counter stats for './uds-server':
+Performance counter stats for './kv-server':
 
 | Server-Side Interpretation | Observation                                      | Meaning                                     | Inference                                    |
 |----------------------------|------------------------------------------------|---------------------------------------------|----------------------------------------------|
-| read = 37                  | The server performed 37 read operations from connected clients.  | Low load; likely few requests received.    | Server experienced minimal incoming data requests. |
-| write = 3                  | Only 3 responses sent to clients.               | Indicates limited interaction or mostly idle server. | Server mostly idle with few outbound responses.     |
+| read = 3                  | The server performed 37 read operations from connected clients.  | Low load; likely few requests received.    | Server experienced minimal incoming data requests. |
+| write = 1                  | Only 3 responses sent to clients.               | Indicates limited interaction or mostly idle server. | Server mostly idle with few outbound responses.     |
 | accept = 2                 | Two client connections accepted.                 | Few clients connected during profiling.    | Low number of unique client connections.            |
 | Overall                    | Low syscall counts and high elapsed time (97s)  | Server was mostly waiting for client requests or idle. | Server mainly in wait state, low activity load.     |
 
 # Example Output (Client)
 
- Performance counter stats for './uds-client':
+ Performance counter stats for './kv-client':
 
-        6      syscalls:sys_enter_read
-        9      syscalls:sys_enter_write
+        2      syscalls:sys_enter_read
+        5      syscalls:sys_enter_write
         0      syscalls:sys_enter_accept
 
-   57 seconds time elapsed
+   4 seconds time elapsed
 
    # Client-Side Interpretation
 
@@ -34,8 +34,8 @@ Performance counter stats for './uds-server':
 
    | Observation       | Meaning                                      | Inference                                  |
 |-------------------|----------------------------------------------|--------------------------------------------|
-| write = 9       | Client issued many write calls (sending commands/requests). | Indicates client actively communicating with the server. |
-| read = 6        | Client received responses fewer times than it sent data.   | May be waiting for replies or batching requests.           |
+| write = 2       | Client issued many write calls (sending commands/requests). | Indicates client actively communicating with the server. |
+| read = 5        | Client received responses fewer times than it sent data.   | May be waiting for replies or batching requests.           |
 | connect = 0      | Two connection attempts made.                  | Could be reconnects or multiple sessions.                   |
 | Overall           | More writes than reads                          | Client is request-heavy; may be generating load.           |
 
@@ -56,7 +56,8 @@ This table summarizes how to interpret `perf stat` syscall counters for a Unix D
 ## 📊 Example perf stat Usage
 
 ```bash
-sudo perf stat -e syscalls:sys_enter_read,syscalls:sys_enter_write,syscalls:sys_enter_accept ./uds-server
+sudo perf stat -e syscalls:sys_enter_read,syscalls:sys_enter_write,syscalls:sys_enter_accept ./kv-server
+sudo perf stat -e syscalls:sys_enter_read,syscalls:sys_enter_write,syscalls:sys_enter_accept ./kv-client
 
 
 
